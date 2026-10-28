@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+# Lightweight pinned Gradle bootstrap. Kept in the repo because Flutter invokes
+# android/gradlew directly; this avoids requiring a separately committed wrapper JAR.
+set -eu
+
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+GRADLE_VERSION="8.14"
+DIST_NAME="gradle-${GRADLE_VERSION}-all"
+GRADLE_USER_HOME="${GRADLE_USER_HOME:-$HOME/.gradle}"
+BOOTSTRAP_DIR="${GRADLE_USER_HOME}/aether-bootstrap"
+GRADLE_HOME="${BOOTSTRAP_DIR}/gradle-${GRADLE_VERSION}"
+ARCHIVE="${BOOTSTRAP_DIR}/${DIST_NAME}.zip"
+
+if [ ! -x "${GRADLE_HOME}/bin/gradle" ]; then
+  mkdir -p "${BOOTSTRAP_DIR}"
+  if [ ! -s "${ARCHIVE}" ]; then
+    TMP_ARCHIVE="${ARCHIVE}.part"
+    rm -f "${TMP_ARCHIVE}"
+    URL="https://services.gradle.org/distributions/${DIST_NAME}.zip"
+    if command -v curl >/dev/null 2>&1; then
+      curl --fail --location --retry 3 --retry-delay 2 "${URL}" --output "${TMP_ARCHIVE}"
+    elif command -v wget >/dev/null 2>&1; then
+      wget -O "${TMP_ARCHIVE}" "${URL}"
+    else
+      echo "ERROR: install curl or wget to download Gradle ${GRADLE_VERSION}." >&2
+      exit 1
+    fi
+    mv "${TMP_ARCHIVE}" "${ARCHIVE}"
+  fi
+  command -v unzip >/dev/null 2>&1 || { echo "ERROR: install unzip to extract Gradle ${GRADLE_VERSION}." >&2; exit 1; }
+  TMP_DIR="${BOOTSTRAP_DIR}/.extract-${GRADLE_VERSION}-$$"
+  rm -rf "${TMP_DIR}"
+  mkdir -p "${TMP_DIR}"
+  unzip -q "${ARCHIVE}" -d "${TMP_DIR}"
+  rm -rf "${GRADLE_HOME}"
+  mv "${TMP_DIR}/gradle-${GRADLE_VERSION}" "${GRADLE_HOME}"
+  rmdir "${TMP_DIR}"
+fi
+
+cd "${APP_HOME}"
+exec "${GRADLE_HOME}/bin/gradle" "$@"

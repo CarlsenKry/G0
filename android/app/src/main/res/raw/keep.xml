@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resources that are only looked up by name at runtime. audio_service resolves the
+  notification icon from the string "drawable/ic_notification" given in main.dart, so
+  the release resource shrinker cannot see the reference and would delete the icon.
+  Without a valid small icon Android rejects the media notification and shows only its
+  generic "app is running" placeholder, with no transport controls and no lock-screen
+  card.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_notification,@mipmap/ic_launcher,@mipmap/ic_launcher_round,@drawable/launch_background" />
