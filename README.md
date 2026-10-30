@@ -56,20 +56,6 @@ The APK is currently signed using Gradle's debug signing configuration so GitHub
 - **Folder exclusions:** the app uses MediaStore to discover folders, then filters tracks in the app library and queue based on saved exclusions. The media index is still queried on rescan so folders remain discoverable and can be unhidden.
 - **Splash duration:** the Flutter splash display lasts 3 seconds and animates the provided image. A short black native launch window may appear before Flutter renders, depending on device startup time.
 
-## Push from Termux to a new GitHub repository
-
-Extract the ZIP, enter the `aether_music` directory, and replace the example URL with your new empty repository:
-
-```bash
-git init -b main
-git add .
-git commit -m "Brand Krypton m.Player and improve Android playback controls"
-git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
-git push -u origin main
-```
-
-Open the repository's **Actions** tab. After the workflow completes, open the **Android Release APK** run and download the `aether-release-apk` artifact.
-
 
 ### Volume stabilizer (ReplayGain)
 
